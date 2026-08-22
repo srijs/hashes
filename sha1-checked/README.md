@@ -18,8 +18,20 @@ unsuitable for further use in any security critical capacity, as it is
 But, this crate provides the detection [algorithm] pioneered by git, to detect hash collisions when they
 occur and prevent them. The [paper] has more details on how this works.
 
-This implementation will be slower to use than the pure SHA-1 implementation, as it has to do more computations and
-it can not rely on hardware acceleration available on some CPUs.
+## Performance
+
+This implementation is slower than plain SHA-1, since it does extra work per block to detect collisions.
+Measured against this crate's own benchmarks, at throughput relative to plain, undetected SHA-1 on the same backend:
+
+| architecture | scalar | hardware-accelerated |
+|--------------|--------|----------------------|
+| `aarch64`    |    64% |                  63% |
+| `x86_64`     |    55% |                  38% |
+
+Where the CPU's SHA-1 instructions are available, most blocks run through them, falling back to scalar
+compression only when a potential collision is flagged. On `aarch64` this keeps detection roughly the same
+fraction of plain SHA-1's speed as without hardware acceleration. On `x86_64`, `sha1`'s own hardware backend
+speeds up by more than `sha1-checked`'s fixed per-block bookkeeping does, so the gap widens.
 
 ## Examples
 

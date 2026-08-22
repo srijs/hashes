@@ -277,6 +277,8 @@ dependencies = [
 name = "sha1-checked"
 version = "0.11.0-rc.0"
 dependencies = [
+ "cfg-if",
+ "cpufeatures",
  "digest",
  "hex-literal",
  "sha1",
